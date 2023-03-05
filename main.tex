@@ -122,7 +122,21 @@ This demonstrates that $
 
 \section{Bayesian Analysis of the Illustrative Polynomial}
 
+The dataset generated for this problem was generated with Numpy, first by generating a uniform dataset, and then by applying a sinusoidal function to it. The Sklearn \verb|train_test_split| function is then used to split the dataset into both a training and a testing dataset. A plot of the training and testing dataset can be seen in Figure \ref{fig:traintestsplit}.
 
+\begin{figure}[h]
+    \caption{A figure showing the training and testing datasets.}
+    \label{fig:traintestsplit}
+    \includegraphics[width=8cm]{fig/traintestsplit.png}
+\end{figure}
+
+Polynomial regression was then performed on the data, with trials at different P values. As shown in Figure \ref{fig:pvalueboxplt} shows that as the P value increasses, the accuracy increases towards a point. Beyond a certain value, the graph will begin to overfit.
+
+\begin{figure}[h]
+    \caption{A figure showing the training and testing datasets.}
+    \label{fig:traintestsplit}
+    \includegraphics[width=8cm]{fig/pvalueboxplot.png}
+\end{figure}
 
 \pagebreak
 
