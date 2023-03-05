@@ -13,6 +13,7 @@
 \usepackage{memhfixc} 
 \usepackage{pdfsync}  
 \usepackage{fancyhdr}
+\usepackage{mathpazo}
 \pagestyle{fancy}
 
 \title{COMP6257 Coursework 1}
@@ -37,14 +38,86 @@ The main results were \ldots
 
 \section{Verifying the Inverse of a Partitioned Matrix}
 
+The inverse of a partitioned matrix is given by:
 $$
 \begin{bmatrix}
     A & B \\
     C & D
+\end{bmatrix}^{-1}
+= \begin{bmatrix}
+    M & -MBD^{-1} \\
+    -D^{-1}CM & D^{-1} + D^{-1}CMBD^{-1}
 \end{bmatrix}
-
     $$
+Where $M = \begin{bmatrix}
+    A - BD^{-1}C
+\end{bmatrix}^{-1}$. To verify that $\begin{bmatrix}
+    M & -MBD^{-1} \\
+    -D^{-1}CM & D^{-1} + D^{-1}CMBD^{-1}
+\end{bmatrix}$ is the inverse of $\begin{bmatrix}
+    A & B \\
+    C & D
+\end{bmatrix}$, the following condition must be met:
+$$
+\begin{bmatrix}
+    A & B \\
+    C & D
+\end{bmatrix} * 
+\begin{bmatrix}
+    M & -MBD^{-1} \\
+    -D^{-1}CM & D^{-1} + D^{-1}CMBD^{-1}
+\end{bmatrix}
+= \begin{bmatrix}
+    I & 0 \\
+    0 & I
+\end{bmatrix}$$
+Examining each element of the matrix, and using the knowledge that $A*I = I*A = A$, and $A*A^{-1} = A^{-1}A = I$;
+\begin{itemize}
+    \item Row 1 Column 1;
+    \begin{align*}
+        AM + B(-D^{-1}CM) &= I\\
+        AM - BD^{-1}CM &= I\\
+        M * (A - BD^{-1}C) &= I\\
+        M * M^{-1} &= I
+    \end{align*}
+    \item Row 1 Column 2;
+    \begin{align*}
+        A (-MBD^{-1}) + B(D^{-1} + D^{-1}CMBD^{-1}) &= 0 \\
+        -AMBD^{-1} +BD^{-1} + BD^{-1}CMBD^{-1} &= 0\\
+        (AM + I + BD^{-1}CM)BD^{-1} &= 0\\
+        ((A-BD^{-1}C)M - I)BD^{-1} &= 0 \\
+        (M^{-1}M - I)BD^{-1} &= 0 \\
+        (I - I) BD^{-1} &= 0
+    \end{align*}
+    \item Row 2 Column 1;
+    \begin{align*}
+        CM + D(-D^{-1}CM) &= 0 \\
+        CM - DD^{-1}CM &= 0 \\
+        CM - ICM &= 0\\
+        CM - CM &= 0
+    \end{align*}
+    \item and finally, Row 2 Column 2;
+    \begin{align*}
+        C(-MBD^{-1}) + D(D^{-1} + D^{-1}CMBD^{-1}) &= I \\
+        -CMBD^{-1} +  DD^{-1} + DD^{-1}CMBD^{-1} &= I \\
+        -CMBD^{-1} + I + ICMBD^{-1} &= I \\
+        -CMBD^{-1} + CMBD^{-1} + I &= I \\
+        I &= I
+    \end{align*}
+\end{itemize}
+This demonstrates that $
+\begin{bmatrix}
+    A & B \\
+    C & D
+\end{bmatrix}^{-1}
+= \begin{bmatrix}
+    M & -MBD^{-1} \\
+    -D^{-1}CM & D^{-1} + D^{-1}CMBD^{-1}
+\end{bmatrix}
+    $.
 
+
+    
 \pagebreak
 
 \section{Bayesian Analysis of the Illustrative Polynomial}
