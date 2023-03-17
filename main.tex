@@ -25,6 +25,7 @@
 \tableofcontents
 
 \section{Introduction}
+\label{section:partitionedmatrix}
 
 My project was about \ldots
 
@@ -120,6 +121,46 @@ This demonstrates that $
     
 \pagebreak
 
+\section{Inverse of a rank one update of a matrix}
+
+To demonstrate that a matrix is the inverse, as demonstrated in Section \ref{section:partitionedmatrix}, the $A*I = I*A = A$ identity can be used to prove this. Therefore, when examining 
+
+$$ [A + xx^T ]^{-1} = A^{-1} - \frac{A^{-1}xx^TA^{-1}}{1 + x^TA^{-1}x}$$
+
+we can prove that $\frac{A^{-1}xx^TA^{-1}}{1 + x^TA^{-1}x}$ is the inverse by the following process;
+
+\begin{align*}
+    I &= [A + xx^T ] \left(A^{-1} - \frac{A^{-1}xx^TA^{-1}}{1 + x^TA^{-1}x}\right) \\
+    I &= AA^{-1} + xx^TA^{-1} - \frac{AA^{-1}xx^TA^{-1} + xx^TA^{-1}xx^TA^{-1}}{1 + x^TA^{-1}x}\\
+    I &= I + xx^TA^{-1} - \frac{xx^TA^{-1} + xx^TA^{-1}xx^TA^{-1}}{1+x^TA^{-1}x} \\
+    I &= I + xx^TA^{-1} - \frac{x(1+x^TA^{-1}x)x^TA}{1+x^TA^{-1}x} \\
+    I &= I + xx^TA^{-1} - xx^TA^{-1} \\
+    I &= I
+\end{align*}
+ Thus, proving that the inverse of a Rank one update of a matrix is given by 
+$$ [A + xx^T ]^{-1} = A^{-1} - \frac{A^{-1}xx^TA^{-1}}{1 + x^TA^{-1}x}$$
+
+\section{Bayesian Estimation}
+
+Equations 2.141 (Equation \ref{eq:prml2141}) and 2.142 (Equation \ref{eq:prml2142}) in Pattern Recognition and Machine Learning are given as follows:
+
+\begin{equation} \label{eq:prml2141}
+\mu_N = \frac{\sigma^2}{N\sigma_0^2 + \sigma^2}\sigma_0 + \frac{N\sigma^2}{N\sigma_0^2 + \sigma^2}\sigma_{ML}
+\end{equation}
+
+\begin{equation} \label{eq:prml2142}
+\frac{1}{\sigma^2_N} = \frac{1}{\sigma^2_0} + \frac{N}{\sigma^2}
+\end{equation}
+
+\subsection{When $N \rightarrow \infty$}
+
+When $N$ tends towards infinity, Equation \ref{eq:prml2141} will tend towards the maximum likelihood solution, as $\frac{\sigma^2}{N\sigma_0^2 + \sigma^2}$ will tend towards zero, leaving $\mu_N = \frac{N\sigma^2}{N\sigma_0^2 + \sigma^2}\sigma_{ML}$. 
+Similarly, in Equation \ref{eq:prml2141}, the variance will tend towards zero, as the right hand side of the equation will tend towards infinity, and $\frac{1}{\infty} \rightarrow 0$.
+
+\subsection{A highly confident Prior}
+
+For a highly confident prior, the variance would tend towards zero, so $\sigma_0 \rightarrow 0$. This would mean that the mean would reduce to the prior value, and not the maximum likelihood value. 
+
 \section{Bayesian Analysis of the Illustrative Polynomial}
 
 The dataset generated for this problem was generated with Numpy, first by generating a uniform dataset, and then by applying a sinusoidal function to it. The Sklearn \verb|train_test_split| function is then used to split the dataset into both a training and a testing dataset. A plot of the training and testing dataset can be seen in Figure \ref{fig:traintestsplit}.
@@ -130,7 +171,7 @@ The dataset generated for this problem was generated with Numpy, first by genera
     \label{fig:traintestsplit}
 \end{figure}
 
-Polynomial regression was then performed on the data, with trials at different P values. As shown in Figure \ref{fig:pvalueboxplt} shows that as the P value increasses, the accuracy increases towards a point. Beyond a certain value, the graph will begin to overfit.
+Polynomial regression was then performed on the data, with trials at different P values. As shown in Figure \ref{fig:pvalueboxplt} shows that as the P value increases, the accuracy increases towards a point. Beyond a certain value, the graph will begin to over fit.
 
 \begin{figure}[h]
     \includegraphics[width=8cm]{fig/pvalueboxplot.png}
