@@ -178,21 +178,79 @@ For a highly confident prior, the variance would tend towards zero, so $\sigma_0
 
 \section{Bayesian Analysis of the Illustrative Polynomial}
 
+\subsection{Generating the dataset}
 The dataset generated for this problem was generated with Numpy, first by generating a uniform dataset, and then by applying a sinusoidal function to it. The Sklearn \verb|train_test_split| function is then used to split the dataset into both a training and a testing dataset. A plot of the training and testing dataset can be seen in Figure \ref{fig:traintestsplit}.
 
+\subsection{Performing Polynomial Regression}
+
 \begin{figure}[h]
+    \begin{center}
     \includegraphics[width=8cm]{fig/traintestsplit.png}
     \caption{A figure showing the training and testing datasets.}
     \label{fig:traintestsplit}
+\end{center}
 \end{figure}
 
-Polynomial regression was then performed on the data, with trials at different P values. As shown in Figure \ref{fig:pvalueboxplt} shows that as the P value increases, the accuracy increases towards a point. Beyond a certain value, the graph will begin to over fit.
+Polynomial regression was then performed on the data, with trials at different P values. As shown in Figure \ref{fig:pvalueboxplt} shows that as the P value increases, the accuracy increases towards a point. Beyond a certain value, the graph will begin to over fit, and the performance on an unknown dataset will then decrease.
 
 \begin{figure}[h]
+    \begin{center}
     \includegraphics[width=8cm]{fig/pvalueboxplot.png}
     \caption{A figure showing the error values for different p values.}
-    \label{fig:traintestsplit}
+    \label{fig:traintestsplit}     
+\end{center}
 \end{figure}
+
+\subsection{Regularised Regression for a High Order Polynomial}
+\label{sec:changinglamda}
+
+Examining the polynomial at $p=9$, the regularisation hyperparameter, $\lambda$ has an effect on the accuracy of the model. Generally, for lower values of $\lambda$, the error rate is high, before hitting a minimum at approximaley $ln(\lambda) = -18$, before increasing again. This is the same as the value achieved in C Bishop, PRML. This can also be seen in Figure \ref{fig:pandlamchange}
+\begin{figure}[h]
+    \begin{center}
+    \includegraphics[width=16cm]{fig/errorpvalues where min lam is ln-18.0.png.png}
+    \caption{A figure showing the error for the P values on the left (where $\lambda=0$), and a range of $\lambda$ values (where $p=9$) on the right.}
+    \label{fig:pandlamchange}     
+\end{center}
+\end{figure}
+
+\subsection{Bayesian Evidence Formula at different $\alpha$ and $\beta$ values}
+To show the change in probability over different a and b values, I have plotted a contour showing this in Figure \ref*{fig:abcontourplot}. This plot shows that as alpha and beta increases, the evidence value increases for the given dataset.
+\begin{figure}[h]
+    \begin{center}
+    \includegraphics[width=16cm]{fig/contourplot.png}
+    \caption{A figure showing the log value of the probability over a range of $\alpha$ and $\beta$ values.}
+    \label{fig:abcontourplot}     
+\end{center}
+\end{figure}
+
+\subsection{Find the values of $\alpha$ and $\beta$ that maximise $p(t|\alpha, \beta)$}
+
+I attempted various approaches to finding the maximum evidence value.
+
+I attempted to work through the equations shown in Bishop, Section 3.5.2 - Maximising the Evidence Function, implementing Equations 3.87, 3.92, 3.91 and 3.95, by implementing the following loop:
+\begin{itemize}
+    \item Estimate a value for $\alpha$ and $\beta$.
+    \item For N iterations,\begin{itemize}
+        \item Calculate $\lambda_i$ by calculating the eigenvalue from $(\beta \Phi ^T \Phi) u_i= \lambda_i u_i $ (Eq 3.87).
+        \item Calculate $\alpha$ firstly using $\alpha = \frac{\gamma}{m^T_N m_N}$, and after this did not work, using the fact that A has Eigenvalues $\alpha + \lambda_i$.
+        \item Calculate $\gamma$ using $\gamma = \sum_i \frac{\lambda_i}{\alpha + \lambda_i}$
+        \item Calculating $\beta$ using $\beta = \frac{1}{\frac{1}{N - \gamma} \sum_{n=1}^{N} {t_n - m_N^T \phi(x_n)}^2}$, and reusing this $\beta$ value in the next iteration.
+    \end{itemize}
+\end{itemize}
+
+This unfortunatley did not produce the expected values, producing very low $\alpha$ and $\beta$ values.
+
+I also attempted to find the maximum value by calculating a range, and selecting the maximum $\alpha$ and $\beta$ values, but this again did not work as when $\alpha$ or $\beta$ increases, the evidence value increases.
+
+For this reason, I have elected to use the value provided in Bishop, $\alpha = 5x10^{-3}$ to continue. 
+
+
+
+\subsection{Proximity to the best $\lambda$ value Found in Section \ref{sec:changinglamda}}
+
+With the $\alpha$ value selected to be $\alpha = 5e{-3}$, and the previous calculated regularisation parameter to be $ln(\lambda) = -18$, or $\lambda = e^{-18} = 1.523e-08$, as $\frac{\alpha}{\beta}$ is analogous to the regularisation parameter, $\lambda$, the value of $\beta$ can be approximated to $\frac{\alpha}{\lambda}$ as follows;
+
+$$\beta = \frac{\alpha}{\lambda} = \frac{5e{-3}}{1.523e^{-8}} = 65659.96$$
 
 \pagebreak
 
@@ -221,17 +279,21 @@ I also created a distribution for use in both Rejection and Importance sampling,
 where the two distributions were enclosed as much as reasonably possible. These distributions are visible in Figure \ref*{fig:distributions}.
 
 \begin{figure}[h]
+    \begin{center}
     \includegraphics[width=8cm]{fig/distributionsplotted.jpg}
     \caption{A figure showing distribution 1, 2 and the enclosing normal distribution. Distribution $p_1$ is the oval shaped distribution in the top left, and distribution $p_2$ is the small distribution in the bottom right. Distribution 3 is the enclosing distribution.}
     \label{fig:distributions}
+\end{center}
 \end{figure}
 
 \subsection{Rejection Sampling}
 
 \begin{figure}[h]
+    \begin{center}
     \includegraphics[width=8cm]{fig/contour.png}
     \caption{A figure showing the three contours, and plots of the samples which were calculated in the Rejection sampling processs. Points in orange are rejected, and points in blue are accepted. The sample size is $n=100$}
     \label{fig:rejectionsampling}
+\end{center}
 \end{figure}
 To perform rejection sampling, the normal distribution shown in Equation \ref{eq:dist} is created for a set number of samples. Each sample is then iterated over, with the probability of the mixed distribution calculated. If the combined probability is less than the probability of the q distribution, then the sample value is accepted.
 
