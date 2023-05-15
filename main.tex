@@ -55,7 +55,7 @@
 
 
 \section{Verifying the Inverse of a Partitioned Matrix}
-
+\label{section:partitionedmatrix}
 The inverse of a partitioned matrix is given by:
 $$
 \begin{bmatrix}
@@ -174,14 +174,14 @@ Similarly, in Equation \ref{eq:prml2141}, the variance will tend towards zero, a
 
 \subsection{A highly confident Prior}
 
-For a highly confident prior, the variance would tend towards zero, so $\sigma_0 \rightarrow 0$. This would mean that the mean would reduce to the prior value, and not the maximum likelihood value. 
+For a highly confident prior, the variance would tend towards zero, so $\sigma_0 \rightarrow 0$. This would mean that the mean would reduce to the maximum likelehood value, as $\sigma_0 \rightarrow 0$. The variance would also tend towards infinity, as $1/0 \rightarrow \infty$
 
 \section{Bayesian Analysis of the Illustrative Polynomial}
 
 \subsection{Generating the dataset}
 The dataset generated for this problem was generated with Numpy, first by generating a uniform dataset, and then by applying a sinusoidal function to it. The Sklearn \verb|train_test_split| function is then used to split the dataset into both a training and a testing dataset. A plot of the training and testing dataset can be seen in Figure \ref{fig:traintestsplit}.
 
-\subsection{Performing Polynomial Regression}
+\subsubsection{Performing Polynomial Regression}
 
 \begin{figure}[h]
     \begin{center}
@@ -197,7 +197,7 @@ Polynomial regression was then performed on the data, with trials at different P
     \begin{center}
     \includegraphics[width=8cm]{fig/pvalueboxplot.png}
     \caption{A figure showing the error values for different p values.}
-    \label{fig:traintestsplit}     
+    \label{fig:pvalueboxplt}     
 \end{center}
 \end{figure}
 
@@ -307,7 +307,7 @@ def rejection(q_mean, q_var, q, k, dist1, dist2, w, n = 1000,
     forced_input = False, forced_input_value = None):
 
     #   Defining the varibles for accepted and rejected variables.
-    accepted, u_accepted, rejected, u_rejected = [],[],[],[] 
+    accepted, z_accepted, rejected, z_rejected = [],[],[],[] 
 
     #   Creating the samples from the provided distribution information.
     samples = np.random.multivariate_normal(q_mean, q_var, n)
@@ -315,35 +315,34 @@ def rejection(q_mean, q_var, q, k, dist1, dist2, w, n = 1000,
     #   If the input is forced, set the samples to be the input. Used for 
     # calculating the probability for a specific value.
     if forced_input:
-    samples = forced_input_value
+        samples = forced_input_value
 
     #   Iterating over the samples.
     for sample in samples:
-    #   Calculating the mixed gaussian probability dist,
-    # with the weights.
-    prob_dist_1 = w[0]*dist1(sample)
-    prob_dist_2 = w[1]*dist2(sample)
-    combined_prob = prob_dist_1 + prob_dist_2
-
-    u_bound = k * q(sample)
-
-    u = u_bound #np.random.uniform(low = 0, high=u_bound)
-
-    #   If the combined prob is less than the q dist prob
-    if combined_prob > u:
-    # Accept result
-    accepted.append(sample)
-    u_accepted.append(u)
-    else:
-    # else, reject the result
-    rejected.append(sample)
-    u_rejected.append(u)
+        #   Calculating the mixed gaussian probability dist,
+        # with the weights.
+        prob_dist_1 = w[0]*dist1(sample)
+        prob_dist_2 = w[1]*dist2(sample)
+        combined_prob = prob_dist_1 + prob_dist_2
+    
+        y = k * q(sample)
+    
+        #   If the combined prob is less than the q dist prob
+        if combined_prob > y:
+            # Accept result
+            accepted.append(sample)
+            z_accepted.append(y)
+        else:
+            # else, reject the result
+            rejected.append(sample)
+            z_rejected.append(y)
 
     # Return an array of results.
-    return np.array(accepted),np.array(u_accepted), np.array(rejected), np.array(u_rejected)
+    return np.array(accepted),np.array(z_accepted), 
+            np.array(rejected), np.array(z_rejected)
 \end{lstlisting}
 
-\subsection*{Importance Sampling}
+\subsection{Importance Sampling}
 
 Importance sampling was performed by calculating the following value:
 
@@ -357,7 +356,7 @@ This calculation prpvodes the probability of the selection of the value in the m
 \begin{lstlisting}[language=Python, caption=Importance Sampling Code.]
     def importance(q, w, dist1, dist2, vals):
         #   Calculate the weights from the distributions
-        weights = ((w[0] * dist1(vals)) + (w[1] * dist2(vals))) / q(vals) #np.sum(((w[0] * dist1(samples)) + (w[1] * dist2(samples))))
+        weights = ((w[0] * dist1(vals)) + (w[1] * dist2(vals))) / q(vals)
         weights = weights * q(vals)
 
         #   Calculate the probability by multiplying by the weights.
@@ -367,7 +366,7 @@ This calculation prpvodes the probability of the selection of the value in the m
         return y
 \end{lstlisting}
 
-\subsection*{Comparison between results}
+\subsection{Comparison between results}
 
 Examining the point $x = [4.0, 4.0]^T$, importance sampling and rejection sampling score similarly. Importance sampling produces a probability of $p_i = 0.032078$, where rejection sampling produces a probability of $p_r = 0.031606$. These probabilities are very similar, with each algorithm rejecting the position. 
 \pagebreak
